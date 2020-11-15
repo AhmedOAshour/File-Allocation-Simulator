@@ -1,5 +1,6 @@
 from file_allocation import *
 
+
 # Console Run
 def cmd_run():
     # block Input
@@ -22,11 +23,9 @@ def cmd_run():
         print("File added.")
     simulator = Simulator(files, block_num)
     simulator.contiguous()
-    print("Blocks: ")
-    simulator.block.display()
-    print("Files:")
-    for i in files:
-        i.display()
+
+    simulator.display()
+
 
 
 cmd_run()

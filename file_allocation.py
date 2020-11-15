@@ -6,17 +6,20 @@ class File:
         self.start = None
 
     def display(self):
-        print("Name: ", self.name, " Size: ", self.size, "Start:", self.start, "End: ", (self.size+self.start-1))
+        if self.start is None:
+            print("Name: ", self.name, " Size: ", self.size, "Start: Unallocated")
+        else:
+            print("Name: ", self.name, " Size: ", self.size, "Start:", self.start, "End: ", (self.size+self.start-1))
 
 
-class Block:
+class Memory:
 
     def __init__(self, num):
         self.num = num
         self.allocated = 0
-        self.blocks = []
+        self.block = []
         for i in range(num):
-            self.blocks.append(None)
+            self.block.append(None)
 
     def unallocated(self):
         return self.num-self.allocated
@@ -24,10 +27,10 @@ class Block:
     def display(self):
         count = 0
         for i in range(self.num):
-            if self.blocks[i] is None:
-                print(i, " ", self.blocks[i])
+            if self.block[i] is None:
+                print(i, " ", self.block[i])
             else:
-                print("Block: ", i, " File: ", self.blocks[i].name)
+                print("Block: ", i, " File: ", self.block[i].name)
 
 
 class Simulator:
@@ -35,32 +38,39 @@ class Simulator:
     def __init__(self, files, block_num):
         self.files = files
         self.block_num = block_num
-        self.block = Block(block_num)
+        self.memory = Memory(block_num)
 
     def contiguous(self):
         for file in self.files:
             start = 0
-            if self.block.unallocated() >= file.size:
+            if self.memory.unallocated() >= file.size:
                 while True:
                     count = 0
                     for i in range(start, start + file.size):
-                        if self.block.blocks[i] is None:
+                        if self.memory.block[i] is None:
                             count += 1
                         else:
-                            start += self.block.blocks[i].size + count
+                            start += self.memory.block[i].size + count
                             break
                     if count == file.size:
                         for i in range(start, start + file.size):
-                            self.block.blocks[i] = file
-                            self.block.allocated += 1
+                            self.memory.block[i] = file
+                            self.memory.allocated += 1
                         file.start = start
                         break;
                         # allocate
             else:
-                print(file.name, "couldnt be allocated. Insufficient Space")
+                print(file.name, "couldn't be allocated. Insufficient Space")
 
     def linked(self):
         return NotImplementedError()
 
     def indexed(self):
         return NotImplementedError()
+
+    def display(self):
+        print("Files:")
+        for file in self.files:
+            file.display()
+        print("Blocks: ")
+        self.memory.display()
