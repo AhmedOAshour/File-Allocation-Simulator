@@ -6,7 +6,7 @@ class File:
         self.start = None
 
     def display(self):
-        print("Name: ", self.name, " Size: ", self.size, "Start: ", self.start)
+        print("Name: ", self.name, " Size: ", self.size, "Start:", self.start, "End: ", (self.size+self.start-1))
 
 
 class Block:
@@ -27,7 +27,7 @@ class Block:
             if self.blocks[i] is None:
                 print(i, " ", self.blocks[i])
             else:
-                print(i, " ", self.blocks[i].name)
+                print("Block: ", i, " File: ", self.blocks[i].name)
 
 
 class Simulator:
@@ -43,16 +43,16 @@ class Simulator:
             if self.block.unallocated() >= file.size:
                 while True:
                     count = 0
-                    for i in range(start, start+file.size):
+                    for i in range(start, start + file.size):
                         if self.block.blocks[i] is None:
                             count += 1
                         else:
-                            start += self.block.blocks[i].size + count + 1
+                            start += self.block.blocks[i].size + count
                             break
                     if count == file.size:
-                        for i in range(start, file.size):
+                        for i in range(start, start + file.size):
                             self.block.blocks[i] = file
-                            self.block.allocated+=1
+                            self.block.allocated += 1
                         file.start = start
                         break;
                         # allocate
