@@ -60,7 +60,7 @@ class Simulator:
                         break;
                         # allocate
             else:
-                print(file.name, "couldn't be allocated. Insufficient Space")
+                print(file.name, "couldn't be allocated: Insufficient Space")
 
     def linked(self):
         return NotImplementedError()
