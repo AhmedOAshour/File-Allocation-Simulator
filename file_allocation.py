@@ -43,7 +43,7 @@ class Simulator:
     def contiguous(self):
         for file in self.files:
             start = 0
-            if self.memory.unallocated() >= file.size:
+            if self.memory.unallocated() >= file.size and file.start is None:
                 while True:
                     count = 0
                     for i in range(start, start + file.size):
@@ -57,10 +57,8 @@ class Simulator:
                             self.memory.block[i] = file
                             self.memory.allocated += 1
                         file.start = start
-                        break;
+                        break
                         # allocate
-            else:
-                print(file.name, "couldn't be allocated: Insufficient Space")
 
     def linked(self):
         return NotImplementedError()
