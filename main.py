@@ -14,7 +14,7 @@ def main_menu():
         print("1. Change number of blocks")
         print("2. Insert file")
         print("3. Delete file")
-        print("4. Display allocation")
+        print("4. Run/Display Contiguous allocation")
         print("5. Terminate Program")
         choice = input()
         if choice == '1':
@@ -52,38 +52,35 @@ def main_menu():
 
             elif option == 2:  # File Input
                 while True:
-                    file = "input.txt"
+                    filepath = "input.txt"
                     # file = input("Enter filename.txt: ")
-                    if path.exists(file):  # Check if file exists
+                    if path.exists(filepath):  # Check if file exists
                         break  # If file exists, break out of the loop
                     else:
                         print("Input Error: File does not exist.")  # Loop re-iterates until readable file is found
-                input_file = open(file, "r")
-                files_num = int(input_file.readline())  # files_num will read 1st line as Number of files to allocate
-                # file input
-                for f in range(files_num):  # For files_num times, loop will iterate
-                    flag = False
-                    file_name = input_file.readline()  # File format should be file_name\n,file_size\n
-                    file_size = int(input_file.readline())
-                    for file in files:
-                        if file.name == file_name:  # If a file name is repeated, it will be skipped
-                            flag = True
-                            break
-                    if flag:
-                        continue
-                    files.append(File(int(file_size), file_name))  # Adds new File to file list with new name & size
-                input_file.close()
+                with open(filepath, "r") as input_file:
+                    for line in input_file:
+                        filedata = []
+                        for word in line.split():
+                            filedata.append(word)
+                        flag = False
+                        for file in files:
+                            if file.name == filedata[0]:  # If a file name is repeated, it will be skipped
+                                flag = True
+                                break
+                        if flag:
+                            continue
+                        files.append(File(int(filedata[1]), filedata[0]))
             else:
                 print("Invalid input!\n")
 
         elif choice == '3':
             # Delete Files
             name = input("Enter File name: ")
-            for file in files:
-                if file.name == name:
-                    simulator.delete()  # Deletes File with matching file.name
-            print("File not found.")
-            continue
+            if simulator.delete(name):  # Deletes File with matching file.name
+                print("File Deleted.")
+            else:
+                print("File not found.")
 
         elif choice == '4':
             simulator.contiguous()  # Allocates the Files using contiguous allocation

@@ -88,10 +88,12 @@ class Simulator:
     def delete(self, filename):  # Function that deletes File given the File's name from the user
         for file in self.files:
             if file.name == filename:
-                for i in range(file.start, file.size):  # Removing the File from every memory block it is allocated to
-                    self.memory.block[i] = None
+                if file.start is not None:
+                    for i in range(file.start, file.size + file.start):  # Remove file from every memory block it is allocated to
+                        self.memory.block[i] = None
                 self.files.remove(file)  # Removing the File from the file list
-                break
+                return True
+        return False
 
     def display(self):  # Function to display the Files alongside the memory blocks
         print("Files:")
