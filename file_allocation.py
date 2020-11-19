@@ -1,11 +1,11 @@
 class File:
 
-    def __init__(self, size, name):
+    def __init__(self, size, name):  # Constructor
         self.size = size
         self.name = name
         self.start = None
 
-    def display(self):
+    def display(self):  # How the console will display the allocated Files
         if self.start is None:
             print("Name: ", self.name, " Size: ", self.size, "Start: Unallocated")
         else:
@@ -14,22 +14,22 @@ class File:
 
 class Memory:
 
-    def __init__(self, size):
+    def __init__(self, size):  # Constructor
         self.size = size
         self.allocated = 0
         self.block = []
-        for i in range(size):
+        for i in range(size):  # Initializing every memory block with NULL value (empty)
             self.block.append(None)
 
     def change_size(self, size):
         if size == 0:
             self.block = []
-        elif self.size < size:
+        elif self.size < size:  # If new size > old size, system will append new empty blocks
             for i in range(self.size, size):
                 self.block.append(None)
-        elif self.size > size:
-            difference = self.size - size
-            for i in range(self.size - 1, self.size - difference , -1):
+        elif self.size > size:  # If new size < old size, system will delete difference
+            difference = self.size - size  # in memory size and delete any Files that were allocated in the recently
+            for i in range(self.size - 1, self.size - difference, -1):  # deleted memory blocks
                 del self.block[i]
             last = self.block[-1]
             if last is not None and last.start + last.size > size:
@@ -37,12 +37,13 @@ class Memory:
                     self.block[i] = None
         else:
             print("Same size entered, no changes made")
+            return
         self.size = size
 
     def unallocated(self):
         return self.size-self.allocated
 
-    def display(self):
+    def display(self):  # How the console will display the allocated memory blocks
         count = 0
         for i in range(self.size):
             if self.block[i] is None:
@@ -53,13 +54,13 @@ class Memory:
 
 class Simulator:
 
-    def __init__(self, files, memory):
+    def __init__(self, files, memory):  # Constructor
         self.files = files
         self.memory = memory
 
     def contiguous(self):
         for file in self.files:
-            if file.start is None:
+            if file.start is None:  
                 start = 0
                 if self.memory.unallocated() >= file.size and file.start is None:
                     while True:
@@ -84,14 +85,15 @@ class Simulator:
     def indexed(self):
         return NotImplementedError()
 
-    def delete(self, filename):
+    def delete(self, filename):  # Function that deletes File given the File's name from the user
         for file in self.files:
             if file.name == filename:
-                for i in range(file.start,file.size):
+                for i in range(file.start, file.size):  # Removing the File from every memory block it is allocated to
                     self.memory.block[i] = None
-                self.files.remove(file)
+                self.files.remove(file)  # Removing the File from the file list
+                break
 
-    def display(self):
+    def display(self):  # Function to display the Files alongside the memory blocks
         print("Files:")
         for file in self.files:
             file.display()
