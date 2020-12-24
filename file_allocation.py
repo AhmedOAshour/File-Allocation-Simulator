@@ -1,3 +1,5 @@
+import random
+from datetime import datetime
 class File:
 
     def __init__(self, size, name):  # Constructor
@@ -52,6 +54,11 @@ class Memory:
                 print("Block: ", i, " File: ", self.block[i].name)
 
 
+def rng(seed, start, end):
+    random.seed(seed)
+    return random.randint(start, end)
+
+
 class Simulator:
 
     def __init__(self, files, memory):  # Constructor
@@ -59,18 +66,34 @@ class Simulator:
         self.memory = memory
 
     def contiguous(self):
+        seed = datetime.now()
         for file in self.files:
             if file.start is None:  
-                start = 0
+                start = rng(seed, 0, self.memory.size-file.size)
+                seed = start
                 if self.memory.unallocated() >= file.size and file.start is None:
                     while True:
                         count = 0
+                        flag = False
                         for i in range(start, start + file.size):
+                            if i >= self.memory.size:
+                                flag = True
+                                break
                             if self.memory.block[i] is None:
                                 count += 1
                             else:
                                 start += self.memory.block[i].size + count
                                 break
+                        if flag:
+                            count = 0
+                            end = start
+                            start = 0
+                            for i in range(start, end):
+                                if self.memory.block[i] is None:
+                                    count += 1
+                                else:
+                                    start += self.memory.block[i].size + count
+                                    break
                         if count == file.size:
                             # allocate
                             for i in range(start, start + file.size):
