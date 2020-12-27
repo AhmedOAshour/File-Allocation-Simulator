@@ -1,5 +1,4 @@
 from file_allocation import *
-import os.path
 from os import path
 import sys
 
@@ -83,6 +82,7 @@ def main_menu():
                 print("File not found.")
 
         elif choice == '4':
+            simulator.reset()
             simulator.contiguous()  # Allocates the Files using contiguous allocation
             simulator.display()  # Displays the allocated Files' names, sizes, start & end
 

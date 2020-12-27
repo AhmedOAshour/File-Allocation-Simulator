@@ -1,5 +1,7 @@
 import random
 from datetime import datetime
+
+
 class File:
 
     def __init__(self, size, name):  # Constructor
@@ -54,11 +56,6 @@ class Memory:
                 print("Block: ", i, " File: ", self.block[i].name)
 
 
-def rng(seed, start, end):
-    random.seed(seed)
-    return random.randint(start, end)
-
-
 class Simulator:
 
     def __init__(self, files, memory):  # Constructor
@@ -66,41 +63,35 @@ class Simulator:
         self.memory = memory
 
     def contiguous(self):
-        seed = datetime.now()
         for file in self.files:
-            if file.start is None:  
-                start = rng(seed, 0, self.memory.size-file.size)
-                seed = start
-                if self.memory.unallocated() >= file.size and file.start is None:
-                    while True:
-                        count = 0
-                        flag = False
-                        for i in range(start, start + file.size):
-                            if i >= self.memory.size:
-                                flag = True
-                                break
-                            if self.memory.block[i] is None:
-                                count += 1
-                            else:
-                                start += self.memory.block[i].size + count
-                                break
-                        if flag:
-                            count = 0
-                            end = start
-                            start = 0
-                            for i in range(start, end):
-                                if self.memory.block[i] is None:
-                                    count += 1
-                                else:
-                                    start += self.memory.block[i].size + count
-                                    break
-                        if count == file.size:
-                            # allocate
-                            for i in range(start, start + file.size):
-                                self.memory.block[i] = file
-                                self.memory.allocated += 1
-                            file.start = start
+            if file.start is None and self.memory.unallocated() >= file.size:
+                start = rng(0, self.memory.size - file.size)
+                print(start)
+                rngval = start
+                loop_flag = True
+                while loop_flag:
+                    count = 0
+                    flag = False
+                    for i in range(start, start + file.size):
+                        if flag and i >= rngval:
+                            loop_flag = False
+                        if i >= self.memory.size and not flag:
+                            flag = True
                             break
+                        if self.memory.block[i] is None:
+                            count += 1
+                        else:
+                            start += self.memory.block[i].size + count
+                            break
+                    if flag:
+                        start = 0
+                        # due to random start if end is reached loop back to memory block 0
+                    if count == file.size:
+                        for i in range(start, start + file.size):  # allocate
+                            self.memory.block[i] = file
+                            self.memory.allocated += 1
+                        file.start = start
+                        break
 
     def linked(self):
         return NotImplementedError()
@@ -108,12 +99,20 @@ class Simulator:
     def indexed(self):
         return NotImplementedError()
 
+    def reset(self):
+        for i in range(0, self.memory.size):
+            self.memory.block[i] = None
+        self.memory.allocated = 0
+        for file in self.files:
+            file.start = None
+
     def delete(self, filename):  # Function that deletes File given the File's name from the user
         for file in self.files:
             if file.name == filename:
-                if file.start is not None:
-                    for i in range(file.start, file.size + file.start):  # Remove file from every memory block it is allocated to
+                if file.start is not None:  # Remove file from every memory block it is allocated to
+                    for i in range(file.start, file.size + file.start):
                         self.memory.block[i] = None
+                        self.memory.allocated -= 1
                 self.files.remove(file)  # Removing the File from the file list
                 return True
         return False
@@ -124,3 +123,7 @@ class Simulator:
             file.display()
         print("Blocks: ")
         self.memory.display()
+
+
+def rng(start, end):
+    return random.randint(start, end)
