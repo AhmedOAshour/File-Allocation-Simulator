@@ -14,7 +14,9 @@ def main_menu():
         print("2. Insert file")
         print("3. Delete file")
         print("4. Run/Display Contiguous allocation")
-        print("5. Terminate Program")
+        print("5. Run/Display Linked allocation")
+        print("6. Run/Display Indexed allocation")
+        print("7. Terminate Program")
         choice = input()
         if choice == '1':
             block_num = int(input("Enter the number of blocks: "))
@@ -81,12 +83,20 @@ def main_menu():
             else:
                 print("File not found.")
 
-        elif choice == '4':
+        elif choice == '4':  # Contiguous
             simulator.reset()
             simulator.contiguous()  # Allocates the Files using contiguous allocation
             simulator.display()  # Displays the allocated Files' names, sizes, start & end
 
-        elif choice == '5':
+        elif choice == '5':  # Linked
+            simulator.reset()
+            simulator.linked()  # Allocates the Files using contiguous allocation
+            simulator.display_linked()  # Displays the allocated Files' names, sizes, start & end
+
+        elif choice == '6':  # Indexed
+            print("Not Implemented")
+
+        elif choice == '7':
             sys.exit("Goodbye! See you with the A+.")
         else:
             print("Invalid input.")

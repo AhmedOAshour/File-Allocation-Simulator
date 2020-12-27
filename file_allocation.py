@@ -8,12 +8,13 @@ class File:
         self.size = size
         self.name = name
         self.start = None
-
+        self.end = None
+    #
     def display(self):  # How the console will display the allocated Files
         if self.start is None:
             print("Name: ", self.name, " Size: ", self.size, "Start: Unallocated")
         else:
-            print("Name: ", self.name, " Size: ", self.size, "Start:", self.start, "End: ", (self.size+self.start-1))
+            print("Name: ", self.name, " Size: ", self.size, "Start:", self.start, "End: ", self.end)
 
 
 class Memory:
@@ -45,7 +46,7 @@ class Memory:
         self.size = size
 
     def unallocated(self):
-        return self.size-self.allocated
+        return self.size - self.allocated
 
     def display(self):  # How the console will display the allocated memory blocks
         count = 0
@@ -54,6 +55,19 @@ class Memory:
                 print("Block: ", i, " File: ", self.block[i])
             else:
                 print("Block: ", i, " File: ", self.block[i].name)
+
+    def display_linked(self):
+        for i in range(self.size):
+            if self.block[i] is None:
+                print("Block: ", i, " File: ", self.block[i])
+            else:
+                print("Block: ", i, " File: ", self.block[i].data.name)
+
+class Node:
+
+    def __init__(self, data, nextval):
+        self.data = data
+        self.nextval = nextval
 
 
 class Simulator:
@@ -65,7 +79,7 @@ class Simulator:
     def contiguous(self):
         for file in self.files:
             if file.start is None and self.memory.unallocated() >= file.size:
-                start = rng(0, self.memory.size - file.size)
+                start = rng(0, self.memory.size)
                 print(start)
                 rngval = start
                 loop_flag = True
@@ -91,10 +105,36 @@ class Simulator:
                             self.memory.block[i] = file
                             self.memory.allocated += 1
                         file.start = start
+                        file.end = file.size + file.start - 1
                         break
 
     def linked(self):
-        return NotImplementedError()
+        for file in self.files:
+            if file.start is None and self.memory.unallocated() >= file.size:
+                current = None
+                for i in range(0, file.size):
+                    index = rng(0, rng(0, self.memory.size))
+                    while self.memory.block[index] is not None:
+                        index += 1
+                        if index >= self.memory.size:
+                            index = 0
+                    self.memory.block[index] = Node(file, None)
+                    self.memory.allocated += 1
+                    if current is not None:
+                        current.nextval = self.memory.block[index]
+                        current = current.nextval
+                    if i == 0:
+                        file.start = index
+                        current = self.memory.block[index]
+                    if i == file.size -1:
+                        file.end = index
+
+    def display_linked(self):
+        print("Files:")
+        for file in self.files:
+            file.display()
+        print("Blocks: ")
+        self.memory.display_linked()
 
     def indexed(self):
         return NotImplementedError()
@@ -105,6 +145,7 @@ class Simulator:
         self.memory.allocated = 0
         for file in self.files:
             file.start = None
+            file.end = None
 
     def delete(self, filename):  # Function that deletes File given the File's name from the user
         for file in self.files:
