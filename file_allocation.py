@@ -1,5 +1,4 @@
 import random
-from datetime import datetime
 
 
 class File:
@@ -9,7 +8,7 @@ class File:
         self.name = name
         self.start = None
         self.end = None
-    #
+
     def display(self):  # How the console will display the allocated Files
         if self.start is None:
             print("Name: ", self.name, " Size: ", self.size, "Start: Unallocated")
@@ -49,10 +48,11 @@ class Memory:
         return self.size - self.allocated
 
     def display(self):  # How the console will display the allocated memory blocks
-        count = 0
         for i in range(self.size):
             if self.block[i] is None:
                 print("Block: ", i, " File: ", self.block[i])
+            elif isinstance(self.block[i],list):
+                print("Block: ", i, " Index Table: ", self.block[i])
             else:
                 print("Block: ", i, " File: ", self.block[i].name)
 
@@ -62,6 +62,14 @@ class Memory:
                 print("Block: ", i, " File: ", self.block[i])
             else:
                 print("Block: ", i, " File: ", self.block[i].data.name)
+
+    def display_indexed(self):
+        for i in range(self.size):
+            if self.block[i] is None:
+                print("Block: ", i, " File: ", self.block[i])
+            else:
+                print("Block: ", i, " File: ", self.block[i].name)
+
 
 class Node:
 
@@ -79,7 +87,7 @@ class Simulator:
     def contiguous(self):
         for file in self.files:
             if file.start is None and self.memory.unallocated() >= file.size:
-                start = rng(0, self.memory.size)
+                start = rng(0, self.memory.size - 1)
                 print(start)
                 rngval = start
                 loop_flag = True
@@ -113,7 +121,7 @@ class Simulator:
             if file.start is None and self.memory.unallocated() >= file.size:
                 current = None
                 for i in range(0, file.size):
-                    index = rng(0, rng(0, self.memory.size))
+                    index = rng(0, self.memory.size - 1)
                     while self.memory.block[index] is not None:
                         index += 1
                         if index >= self.memory.size:
@@ -126,18 +134,26 @@ class Simulator:
                     if i == 0:
                         file.start = index
                         current = self.memory.block[index]
-                    if i == file.size -1:
+                    if i == file.size - 1:
                         file.end = index
 
-    def display_linked(self):
-        print("Files:")
-        for file in self.files:
-            file.display()
-        print("Blocks: ")
-        self.memory.display_linked()
-
     def indexed(self):
-        return NotImplementedError()
+        for file in self.files:
+            if file.start is None and self.memory.unallocated() >= file.size + 1:  # Check condition
+                for i in range(0, file.size + 1):
+                    index = rng(0, self.memory.size - 1)
+                    while self.memory.block[index] is not None:
+                        index += 1
+                        if index >= self.memory.size:
+                            index = 0
+                    if i == 0:
+                        file.start = index
+                        self.memory.block[index] = []
+                        self.memory.allocated += 1
+                        continue
+                    self.memory.block[index] = file
+                    self.memory.block[file.start].append(index)
+                    self.memory.allocated += 1
 
     def reset(self):
         for i in range(0, self.memory.size):
@@ -162,6 +178,24 @@ class Simulator:
         print("Files:")
         for file in self.files:
             file.display()
+        print("Blocks: ")
+        self.memory.display()
+
+    def display_linked(self):
+        print("Files:")
+        for file in self.files:
+            file.display()
+        print("Blocks: ")
+        self.memory.display_linked()
+
+    def display_indexed(self):
+        print("Files:")
+        for file in self.files:
+            for i in range(0, file.size):
+                if i == (file.size - 1):
+                    print("File Block: ", file.name, i, ", Memory Block: ", self.memory.block[file.start][i], ", Next Block: NONE")
+                    continue
+                print("File Block: ", file.name, i, ", Memory Block: ", self.memory.block[file.start][i], ", Next Block: ", self.memory.block[file.start][i+1])
         print("Blocks: ")
         self.memory.display()
 

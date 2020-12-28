@@ -94,7 +94,9 @@ def main_menu():
             simulator.display_linked()  # Displays the allocated Files' names, sizes, start & end
 
         elif choice == '6':  # Indexed
-            print("Not Implemented")
+            simulator.reset()
+            simulator.indexed()  # Allocates the Files using contiguous allocation
+            simulator.display_indexed()  # Displays the allocated Files' names, sizes, start & end
 
         elif choice == '7':
             sys.exit("Goodbye! See you with the A+.")
