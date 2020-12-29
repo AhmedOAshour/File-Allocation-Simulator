@@ -192,6 +192,9 @@ class Simulator:
         print("Files:")
         for file in self.files:
             for i in range(0, file.size):
+                if file.start is None:
+                    print("File Block: ", file.name, i, " Not Allocated")
+                    continue
                 if i == (file.size - 1):
                     print("File Block: ", file.name, i, ", Memory Block: ", self.memory.block[file.start][i], ", Next Block: NONE")
                     continue
