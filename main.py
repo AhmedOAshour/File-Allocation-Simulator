@@ -13,7 +13,7 @@ def main_menu():
 
     memory = Memory(block_num)  # Initialize memory with block_num blocks
     files = []  # Initialize file list that will store File objects
-    simulator = Simulator(files, memory) # Initialize simulator that will run the file allocation simulation
+    simulator = Simulator(files, memory)  # Initialize simulator that will run the file allocation simulation
 
     while True:
         print("Menu")  # Main Menu
@@ -39,7 +39,6 @@ def main_menu():
         elif choice == '2':
             option = int(input("How would you like to input your data? \n1.Manual Input \n2.File Input \n"))
             if option == 1:  # Manual Input
-                # file input
                 print("Press Enter when done.")
                 while True:
                     flag = False
@@ -87,8 +86,7 @@ def main_menu():
             else:
                 print("Invalid input!\n")
 
-        elif choice == '3':
-            # Delete Files
+        elif choice == '3':  # Delete Files
             name = input("Enter File name: ")
             if simulator.delete(name):  # Deletes File with matching file.name
                 print("File Deleted.")
@@ -96,22 +94,22 @@ def main_menu():
                 print("File not found.")
 
         elif choice == '4':  # Contiguous
-            simulator.reset()
+            simulator.reset()  # Clears memory
             simulator.contiguous()  # Allocates the Files using contiguous allocation
             simulator.display()  # Displays the allocated Files' names, sizes, start & end
 
         elif choice == '5':  # Linked
-            simulator.reset()
-            simulator.linked()  # Allocates the Files using contiguous allocation
+            simulator.reset()   # Clears memory
+            simulator.linked()  # Allocates the Files using linked allocation
             simulator.display_linked()  # Displays the allocated Files' names, sizes, start & end
 
         elif choice == '6':  # Indexed
-            simulator.reset()
-            simulator.indexed()  # Allocates the Files using contiguous allocation
+            simulator.reset()   # Clears memory
+            simulator.indexed()  # Allocates the Files using indexed allocation
             simulator.display_indexed()  # Displays the allocated Files' names, sizes, start & end
 
         elif choice == '7':
-            sys.exit("Goodbye! See you with the A+.")
+            sys.exit("Goodbye!")
         else:
             print("Invalid input.")
 

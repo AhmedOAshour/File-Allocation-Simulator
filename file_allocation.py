@@ -44,31 +44,31 @@ class Memory:
             return
         self.size = size
 
-    def unallocated(self):
+    def unallocated(self):  # Returns the number of unallocated blocks in memory
         return self.size - self.allocated
 
-    def display(self):  # How the console will display the allocated memory blocks
+    def display(self):  # How the console will display the allocated memory blocks using contiguous allocation
         for i in range(self.size):
             if self.block[i] is None:
-                print("Block: ", i, " File: ", self.block[i])
+                print("Block: ", i, ", File: ", self.block[i])
             elif isinstance(self.block[i], list):
-                print("Block: ", i, " Index Table: ", self.block[i])
+                print("Block: ", i, ", Index Table: ", self.block[i])
             else:
-                print("Block: ", i, " File: ", self.block[i].name)
+                print("Block: ", i, ", File: ", self.block[i].name)
 
-    def display_linked(self):
+    def display_linked(self):  # How the console will display the allocated memory blocks using linked allocation
         for i in range(self.size):
             if self.block[i] is None:
-                print("Block: ", i, " File: ", self.block[i])
+                print("Block: ", i, ", File: ", self.block[i])
             else:
-                print("Block: ", i, " File: ", self.block[i].data.name)
+                print("Block: ", i, ", File: ", self.block[i].data.name)
 
-    def display_indexed(self):
+    def display_indexed(self):  # How the console will display the allocated memory blocks using indexed allocation
         for i in range(self.size):
             if self.block[i] is None:
-                print("Block: ", i, " File: ", self.block[i])
+                print("Block: ", i, ", File: ", self.block[i])
             else:
-                print("Block: ", i, " File: ", self.block[i].name)
+                print("Block: ", i, ", File: ", self.block[i].name)
 
 
 class Node:
@@ -162,7 +162,7 @@ class Simulator:
                     self.memory.block[file.start].append(index)
                     self.memory.allocated += 1
 
-    def reset(self):
+    def reset(self):  # De-allocates all memory blocks
         for i in range(0, self.memory.size):
             self.memory.block[i] = None
         self.memory.allocated = 0
@@ -225,16 +225,24 @@ class Simulator:
         print("Blocks: ")
         self.memory.display()
 
+<<<<<<< HEAD
     def display_linked(self):
         print("Available space: ", self.memory.unallocated())
+=======
+    def display_linked(self):  # Function to display the Files alongside the memory blocks
+>>>>>>> 766626e23a19137286a50a18c3c006d25e711b71
         print("Files:")
         for file in self.files:
             file.display()
         print("Blocks: ")
         self.memory.display_linked()
 
+<<<<<<< HEAD
     def display_indexed(self):
         print("Available space: ", self.memory.unallocated())
+=======
+    def display_indexed(self):  # Function to display the Files alongside the memory blocks
+>>>>>>> 766626e23a19137286a50a18c3c006d25e711b71
         print("Files:")
         for file in self.files:
             for i in range(0, file.size):
