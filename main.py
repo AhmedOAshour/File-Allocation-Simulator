@@ -4,7 +4,13 @@ import sys
 
 
 def main_menu():
-    block_num = int(input("Enter the number of blocks: "))  # User inserts block number in memory
+    while True:
+        block_num = input("Enter the number of blocks: ")  # User inserts block number in memory
+        if block_num.isnumeric():
+            break
+        print("Please enter an integer")
+    block_num = int(block_num)
+
     memory = Memory(block_num)  # Initialize memory with block_num blocks
     files = []  # Initialize file list that will store File objects
     simulator = Simulator(files, memory) # Initialize simulator that will run the file allocation simulation
@@ -20,7 +26,12 @@ def main_menu():
         print("7. Terminate Program")
         choice = input()
         if choice == '1':
-            block_num = int(input("Enter the number of blocks: "))
+            while True:
+                block_num = input("Enter the number of blocks: ")  # User inserts block number in memory
+                if block_num.isnumeric():
+                    break
+                print("Please enter an integer")
+            block_num = int(block_num)
             memory.change_size(block_num)  # Function that changes number of blocks in memory
             #  Function deletes any unallocated memory blocks
             #  Function also deletes any allocated memory blocks and the allocated Files

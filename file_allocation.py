@@ -85,16 +85,17 @@ class Simulator:
         self.memory = memory
         self.flag = None
 
-    def contiguous(self):
+    def contiguous(self): # fix this shit faggot
         self.flag = 1
         for file in self.files:
+            error_count = 0
             if file.start is None and self.memory.unallocated() >= file.size:
                 start = rng(0, self.memory.size - 1)
-                print(start)
                 rngval = start
                 loop_flag = True
                 while loop_flag:
                     count = 0
+                    error_count += 1
                     flag = False
                     for i in range(start, start + file.size):
                         if flag and i >= rngval:
@@ -107,6 +108,8 @@ class Simulator:
                         else:
                             start += self.memory.block[i].size + count
                             break
+                    if error_count > 200:
+                        break
                     if flag:
                         start = 0
                         # due to random start if end is reached loop back to memory block 0
@@ -215,6 +218,7 @@ class Simulator:
         return False
 
     def display(self):  # Function to display the Files alongside the memory blocks
+        print("Available space: ", self.memory.unallocated())
         print("Files:")
         for file in self.files:
             file.display()
@@ -222,6 +226,7 @@ class Simulator:
         self.memory.display()
 
     def display_linked(self):
+        print("Available space: ", self.memory.unallocated())
         print("Files:")
         for file in self.files:
             file.display()
@@ -229,6 +234,7 @@ class Simulator:
         self.memory.display_linked()
 
     def display_indexed(self):
+        print("Available space: ", self.memory.unallocated())
         print("Files:")
         for file in self.files:
             for i in range(0, file.size):
