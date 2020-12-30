@@ -8,6 +8,7 @@ def main_menu():
     memory = Memory(block_num)  # Initialize memory with block_num blocks
     files = []  # Initialize file list that will store File objects
     simulator = Simulator(files, memory) # Initialize simulator that will run the file allocation simulation
+
     while True:
         print("Menu")  # Main Menu
         print("1. Change number of blocks")

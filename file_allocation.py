@@ -51,7 +51,7 @@ class Memory:
         for i in range(self.size):
             if self.block[i] is None:
                 print("Block: ", i, " File: ", self.block[i])
-            elif isinstance(self.block[i],list):
+            elif isinstance(self.block[i], list):
                 print("Block: ", i, " Index Table: ", self.block[i])
             else:
                 print("Block: ", i, " File: ", self.block[i].name)
@@ -83,8 +83,10 @@ class Simulator:
     def __init__(self, files, memory):  # Constructor
         self.files = files
         self.memory = memory
+        self.flag = None
 
     def contiguous(self):
+        self.flag = 1
         for file in self.files:
             if file.start is None and self.memory.unallocated() >= file.size:
                 start = rng(0, self.memory.size - 1)
@@ -117,6 +119,7 @@ class Simulator:
                         break
 
     def linked(self):
+        self.flag = 2
         for file in self.files:
             if file.start is None and self.memory.unallocated() >= file.size:
                 current = None
@@ -138,6 +141,7 @@ class Simulator:
                         file.end = index
 
     def indexed(self):
+        self.flag = 3
         for file in self.files:
             if file.start is None and self.memory.unallocated() >= file.size + 1:  # Check condition
                 for i in range(0, file.size + 1):
@@ -163,14 +167,50 @@ class Simulator:
             file.start = None
             file.end = None
 
-    def delete(self, filename):  # Function that deletes File given the File's name from the user
+    def delete(self, filename):
+        if self.flag is None or self.flag == 1:
+            return self.delete_contiguous(filename)
+        elif self.flag == 2:
+            return self.delete_linked(filename)
+        elif self.flag == 3:
+            return self.delete_indexed(filename)
+
+    def delete_contiguous(self, filename):  # Function that deletes File given the File's name from the user
         for file in self.files:
             if file.name == filename:
-                if file.start is not None:  # Remove file from every memory block it is allocated to
+                if file.start is not None:
+                    # Remove file from every memory block it is allocated to
                     for i in range(file.start, file.size + file.start):
                         self.memory.block[i] = None
                         self.memory.allocated -= 1
                 self.files.remove(file)  # Removing the File from the file list
+                return True
+        return False
+
+    def delete_indexed(self, filename):
+        for file in self.files:
+            if file.name == filename:
+                if file.start is not None:
+                    table = self.memory.block[file.start]
+                    self.memory.block[file.start] = None
+                    self.memory.allocated -= 1
+                    for i in table:
+                        self.memory.block[i] = None
+                        self.memory.allocated -= 1
+                self.files.remove(file)
+                return True
+        return False
+
+    def delete_linked(self, filename):
+        for file in self.files:
+            if file.name == filename:
+                if file.start is not None:
+                    current = self.memory.block[file.start]
+                    while current.nextval is not None:
+                        next = current.nextval
+                        del current
+                        current = next
+                self.files.remove(file)
                 return True
         return False
 
@@ -203,5 +243,5 @@ class Simulator:
         self.memory.display()
 
 
-def rng(start, end):
+def rng(start, end):  # random number generator, default seed is system time
     return random.randint(start, end)
