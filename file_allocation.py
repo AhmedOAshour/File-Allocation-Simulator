@@ -85,7 +85,7 @@ class Simulator:
         self.memory = memory
         self.flag = None
 
-    def contiguous(self): # fix this shit faggot
+    def contiguous(self):
         self.flag = 1
         for file in self.files:
             error_count = 0
